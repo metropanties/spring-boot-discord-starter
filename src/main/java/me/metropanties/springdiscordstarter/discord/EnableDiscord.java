@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@ComponentScan("me.metropanties.springdiscordstarter.discord")
+@ComponentScan("me.metropanties.springdiscordstarter")
 @Import(JDAConfigurationProvider.class)
 public @interface EnableDiscord {
 
