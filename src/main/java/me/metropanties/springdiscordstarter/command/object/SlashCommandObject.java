@@ -43,8 +43,8 @@ public class SlashCommandObject {
 
         if (hasSubCommands()) {
             for (SubCommandObject subCommand : this.subCommands) {
-                commandData.addSubcommands(new SubcommandData(subCommand.name(), subCommand.description())
-                        .addOptions(subCommand.options()));
+                commandData.addSubcommands(new SubcommandData(subCommand.getName(), subCommand.getDescription())
+                        .addOptions(subCommand.getOptions()));
             }
         }
     }
