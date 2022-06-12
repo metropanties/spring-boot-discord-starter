@@ -17,8 +17,7 @@ public class DefaultJDAConfiguration implements JDAConfiguration {
     @Override
     public JDA jda(@NotNull String token) throws LoginException, InterruptedException {
         return JDABuilder.createDefault(token)
-                .build()
-                .awaitReady();
+                .build();
     }
 
 }

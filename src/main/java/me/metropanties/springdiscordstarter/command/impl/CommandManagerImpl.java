@@ -64,7 +64,9 @@ public class CommandManagerImpl extends ListenerAdapter implements CommandManage
                 continue;
 
             registeredSlashCommands.add(slashCommand);
+            LOGGER.info("Registered " + slashCommand.getName() + " command!");
         }
+        sortCommands();
 
         try {
             this.embedBuilder = context.getBean(EmbedBuilder.class);
@@ -72,8 +74,6 @@ public class CommandManagerImpl extends ListenerAdapter implements CommandManage
             LOGGER.warn("No EmbedBuilder bean found, creating default embed builder.");
             this.embedBuilder = new EmbedBuilder();
         }
-
-        sortCommands();
     }
 
     private SlashCommandObject createSlashCommand(@Nonnull Class<?> commandClass) {
@@ -146,8 +146,10 @@ public class CommandManagerImpl extends ListenerAdapter implements CommandManage
         registeredSlashCommands.forEach(command -> {
             if (command.isGuildOnly()) {
                 guildSlashCommands.add(command);
+                LOGGER.info(String.format("Registered %s command as a guild command.", command.getName()));
             } else {
                 globalSlashCommands.add(command);
+                LOGGER.info(String.format("Registered %s command as a global command.", command.getName()));
             }
         });
     }
