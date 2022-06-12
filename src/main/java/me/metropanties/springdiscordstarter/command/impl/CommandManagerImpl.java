@@ -12,19 +12,21 @@ import me.metropanties.springdiscordstarter.command.annotation.SubCommand;
 import me.metropanties.springdiscordstarter.listener.JDAListener;
 import me.metropanties.springdiscordstarter.utils.MemberUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
@@ -42,6 +44,8 @@ public class CommandManagerImpl extends ListenerAdapter implements CommandManage
 
     private final ApplicationContext context;
     private final Set<SlashCommandObject> registeredSlashCommands = new HashSet<>();
+    private final Set<SlashCommandObject> globalSlashCommands = new HashSet<>();
+    private final Set<SlashCommandObject> guildSlashCommands = new HashSet<>();
 
     private EmbedBuilder embedBuilder;
 
@@ -68,6 +72,8 @@ public class CommandManagerImpl extends ListenerAdapter implements CommandManage
             LOGGER.warn("No EmbedBuilder bean found, creating default embed builder.");
             this.embedBuilder = new EmbedBuilder();
         }
+
+        sortCommands();
     }
 
     private SlashCommandObject createSlashCommand(@Nonnull Class<?> commandClass) {
@@ -75,9 +81,17 @@ public class CommandManagerImpl extends ListenerAdapter implements CommandManage
         builder.clazz(commandClass);
         SlashCommand command = commandClass.getAnnotation(SlashCommand.class);
 
-        // Name and description
+        // Name, description and guilds
         builder.name(command.name());
         builder.description(command.description());
+        List<Long> enabledGuilds = new ArrayList<>();
+        for (long guildID : command.enabledGuilds()) {
+            if (enabledGuilds.contains(guildID))
+                continue;
+
+            enabledGuilds.add(guildID);
+        }
+        builder.enabledGuilds(enabledGuilds);
 
         // Sub commands and options
         List<SubCommandObject> subcommands = new ArrayList<>();
@@ -128,6 +142,16 @@ public class CommandManagerImpl extends ListenerAdapter implements CommandManage
         return builder.build();
     }
 
+    private void sortCommands() {
+        registeredSlashCommands.forEach(command -> {
+            if (command.isGuildOnly()) {
+                guildSlashCommands.add(command);
+            } else {
+                globalSlashCommands.add(command);
+            }
+        });
+    }
+
     private void executeCommand(@Nonnull SlashCommandObject command, @Nonnull SlashCommandInteractionEvent event) {
         try {
             command.getClazz().getDeclaredConstructor().setAccessible(true);
@@ -139,19 +163,34 @@ public class CommandManagerImpl extends ListenerAdapter implements CommandManage
         }
     }
 
+    private void queueCommands(@Nonnull CommandListUpdateAction updateAction, @Nonnull Collection<SlashCommandObject> commands) {
+        updateAction.addCommands(commands.stream()
+                .map(SlashCommandObject::getCommandData)
+                .filter(Objects::nonNull)
+                .toList()
+        ).queue();
+    }
+
     @Override
     public void onGuildReady(@NotNull GuildReadyEvent event) {
         Guild guild = event.getGuild();
         if (guild.getIdLong() == 776219284237582377L) {
             CommandListUpdateAction updateAction = guild.updateCommands();
-            List<SlashCommandData> commands = registeredSlashCommands.stream()
-                    .map(SlashCommandObject::getCommandData)
-                    .filter(Objects::nonNull)
-                    .toList();
-            updateAction.addCommands(commands).queue();
+            queueCommands(updateAction, guildSlashCommands.stream()
+                    .filter(command -> command.getEnabledGuilds().contains(guild.getIdLong()))
+                    .toList()
+            );
         }
     }
 
+    @Override
+    public void onReady(@NotNull ReadyEvent event) {
+        JDA jda = event.getJDA();
+        CommandListUpdateAction updateAction = jda.updateCommands();
+        queueCommands(updateAction, globalSlashCommands);
+    }
+
+    @Async
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         Guild guild = event.getGuild();

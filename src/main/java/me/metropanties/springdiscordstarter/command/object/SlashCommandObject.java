@@ -16,17 +16,19 @@ public class SlashCommandObject {
     private final Class<?> clazz;
     private final String name;
     private final String description;
+    private final List<Long> enabledGuilds;
     private final List<OptionData> options;
     private final List<SubCommandObject> subCommands;
     private final List<Permission> permissions;
     private final Method executeMethod;
     private final SlashCommandData commandData;
 
-    public SlashCommandObject(Class<?> clazz, String name, String description, List<OptionData> options, List<SubCommandObject> subCommands,
+    public SlashCommandObject(Class<?> clazz, String name, String description, List<Long> enabledGuilds, List<OptionData> options, List<SubCommandObject> subCommands,
                               List<Permission> permissions, Method executeMethod) {
         this.clazz = clazz;
         this.name = name;
         this.description = description;
+        this.enabledGuilds = enabledGuilds;
         this.options = options;
         this.subCommands = subCommands;
         this.permissions = permissions;
@@ -47,6 +49,10 @@ public class SlashCommandObject {
                         .addOptions(subCommand.getOptions()));
             }
         }
+    }
+
+    public boolean isGuildOnly() {
+        return enabledGuilds != null && !enabledGuilds.isEmpty();
     }
 
     public boolean hasOptions() {

@@ -13,6 +13,7 @@ public class SlashCommandBuilder {
     private Class<?> clazz;
     private String name;
     private String description;
+    private List<Long> enabledGuilds;
     private List<OptionData> options;
     private List<SubCommandObject> subCommands;
     private List<Permission> permissions;
@@ -30,6 +31,11 @@ public class SlashCommandBuilder {
 
     public SlashCommandBuilder description(@Nonnull String description) {
         this.description = description;
+        return this;
+    }
+
+    public SlashCommandBuilder enabledGuilds(@Nonnull List<Long> enabledGuilds) {
+        this.enabledGuilds = enabledGuilds;
         return this;
     }
 
@@ -54,7 +60,7 @@ public class SlashCommandBuilder {
     }
 
     public SlashCommandObject build() {
-        return new SlashCommandObject(clazz, name, description, options, subCommands, permissions, executeMethod);
+        return new SlashCommandObject(clazz, name, description, enabledGuilds, options, subCommands, permissions, executeMethod);
     }
 
 }

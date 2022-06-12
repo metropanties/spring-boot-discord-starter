@@ -17,6 +17,8 @@ public @interface SlashCommand {
 
     String description();
 
+    long[] enabledGuilds() default {};
+
     SlashCommandOption[] options() default {};
 
     SubCommand[] subCommands() default {};
