@@ -7,6 +7,6 @@ import javax.security.auth.login.LoginException;
 
 public interface JDAConfiguration {
 
-    JDA jda(@Nonnull String token) throws LoginException;
+    JDA jda(@Nonnull String token) throws LoginException, InterruptedException;
 
 }

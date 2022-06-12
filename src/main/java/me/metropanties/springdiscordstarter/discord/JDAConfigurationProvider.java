@@ -18,7 +18,7 @@ public class JDAConfigurationProvider {
     private String token;
 
     @Bean
-    public JDA jda() throws LoginException {
+    public JDA jda() throws LoginException, InterruptedException {
         return configuration.jda(this.token);
     }
 

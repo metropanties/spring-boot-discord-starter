@@ -7,6 +7,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Enables the {@link me.metropanties.springdiscordstarter.discord.JDAConfigurationProvider} for creation of JDA beans.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Import(JDAConfigurationProvider.class)

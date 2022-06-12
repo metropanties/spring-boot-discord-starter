@@ -9,15 +9,16 @@ import org.springframework.context.annotation.Configuration;
 import javax.security.auth.login.LoginException;
 
 /**
- * Creates an JDA instance using JDA's {@link net.dv8tion.jda.api.JDABuilder#createDefault(String)}
+ * Creates an JDA instance using JDA's {@link net.dv8tion.jda.api.JDABuilder#createDefault(String)}.
  */
 @Configuration
 public class DefaultJDAConfiguration implements JDAConfiguration {
 
     @Override
-    public JDA jda(@NotNull String token) throws LoginException {
+    public JDA jda(@NotNull String token) throws LoginException, InterruptedException {
         return JDABuilder.createDefault(token)
-                .build();
+                .build()
+                .awaitReady();
     }
 
 }
