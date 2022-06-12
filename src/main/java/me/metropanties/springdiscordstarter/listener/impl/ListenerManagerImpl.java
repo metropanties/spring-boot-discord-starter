@@ -39,8 +39,7 @@ public class ListenerManagerImpl implements ListenerManager {
 
     @Override
     public Collection<Object> getRegisteredListeners() {
-        return registeredListeners.stream()
-                .toList();
+        return registeredListeners.stream().toList();
     }
 
 }

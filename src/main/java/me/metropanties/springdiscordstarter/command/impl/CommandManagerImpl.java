@@ -182,8 +182,7 @@ public class CommandManagerImpl extends ListenerAdapter implements CommandManage
 
     @Override
     public Collection<SlashCommandObject> getSlashCommands() {
-        return registeredSlashCommands.stream()
-                .toList();
+        return registeredSlashCommands.stream().toList();
     }
 
 }
