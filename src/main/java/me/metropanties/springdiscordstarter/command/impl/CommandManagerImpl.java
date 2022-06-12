@@ -51,11 +51,11 @@ public class CommandManagerImpl extends ListenerAdapter implements CommandManage
         if (commandBeans.values().isEmpty())
             return;
 
-        for (Object obj : commandBeans.values()) {
-            if (obj == null)
+        for (Object command : commandBeans.values()) {
+            if (command == null)
                 continue;
 
-            SlashCommandObject slashCommand = createSlashCommand(obj.getClass());
+            SlashCommandObject slashCommand = createSlashCommand(command.getClass());
             if (slashCommand == null)
                 continue;
 
