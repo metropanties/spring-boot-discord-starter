@@ -6,7 +6,7 @@ import me.metropanties.springdiscordstarter.listener.ListenerManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.Collection;
@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class ListenerManagerImpl implements ListenerManager {
 

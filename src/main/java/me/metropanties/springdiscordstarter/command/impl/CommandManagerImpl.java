@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
@@ -35,7 +35,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
-@Component
+@Service
 @RequiredArgsConstructor
 @JDAListener
 public class CommandManagerImpl extends ListenerAdapter implements CommandManager {
@@ -52,8 +52,10 @@ public class CommandManagerImpl extends ListenerAdapter implements CommandManage
     @PostConstruct
     private void init() {
         Map<String, Object> commandBeans = context.getBeansWithAnnotation(SlashCommand.class);
-        if (commandBeans.values().isEmpty())
+        if (commandBeans.values().isEmpty()) {
+            LOGGER.info("No commands found.");
             return;
+        }
 
         for (Object command : commandBeans.values()) {
             if (command == null)
@@ -212,6 +214,12 @@ public class CommandManagerImpl extends ListenerAdapter implements CommandManage
     }
 
     @Override
+    public void purgeCommands(@Nonnull CommandListUpdateAction updateAction) {
+        updateAction.addCommands(Collections.emptyList()).queue();
+        LOGGER.info("Purged commands!");
+    }
+
+    @Override
     public Optional<SlashCommandObject> getSlashCommandByName(@NotNull String name) {
         return registeredSlashCommands.stream()
                 .filter(command -> command.getName().equals(name))
@@ -219,8 +227,20 @@ public class CommandManagerImpl extends ListenerAdapter implements CommandManage
     }
 
     @Override
+    public Collection<SlashCommandObject> getGlobalSlashCommands() {
+        return globalSlashCommands;
+    }
+
+    @Override
+    public Collection<SlashCommandObject> getGuildSlashCommands(long guildId) {
+        return guildSlashCommands.stream()
+                .filter(command -> command.getEnabledGuilds().contains(guildId))
+                .toList();
+    }
+
+    @Override
     public Collection<SlashCommandObject> getSlashCommands() {
-        return registeredSlashCommands.stream().toList();
+        return registeredSlashCommands;
     }
 
 }
