@@ -64,7 +64,6 @@ public class CommandManagerImpl extends ListenerAdapter implements CommandManage
                 continue;
 
             registeredSlashCommands.add(slashCommand);
-            LOGGER.info("Registered " + slashCommand.getName() + " command!");
         }
         sortCommands();
 
@@ -176,13 +175,11 @@ public class CommandManagerImpl extends ListenerAdapter implements CommandManage
     @Override
     public void onGuildReady(@NotNull GuildReadyEvent event) {
         Guild guild = event.getGuild();
-        if (guild.getIdLong() == 776219284237582377L) {
-            CommandListUpdateAction updateAction = guild.updateCommands();
-            queueCommands(updateAction, guildSlashCommands.stream()
-                    .filter(command -> command.getEnabledGuilds().contains(guild.getIdLong()))
-                    .toList()
-            );
-        }
+        CommandListUpdateAction updateAction = guild.updateCommands();
+        queueCommands(updateAction, guildSlashCommands.stream()
+                .filter(command -> command.getEnabledGuilds().contains(guild.getIdLong()))
+                .toList()
+        );
     }
 
     @Override
