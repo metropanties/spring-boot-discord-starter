@@ -1,7 +1,6 @@
 package me.metropanties.springdiscordstarter.listener.impl;
 
 import lombok.RequiredArgsConstructor;
-import me.metropanties.springdiscordstarter.listener.JDAListener;
 import me.metropanties.springdiscordstarter.listener.ListenerManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -24,14 +23,11 @@ public class ListenerManagerImpl implements ListenerManager {
 
     @PostConstruct
     public void init() {
-        Map<String, Object> listenerBeans = context.getBeansWithAnnotation(JDAListener.class);
+        Map<String, ListenerAdapter> listenerBeans = context.getBeansOfType(ListenerAdapter.class);
         if (listenerBeans.isEmpty())
             return;
 
         for (Object listener : listenerBeans.values()) {
-            if (!(listener instanceof ListenerAdapter))
-                continue;
-
             jda.addEventListener(listener);
             registeredListeners.add(listener);
         }

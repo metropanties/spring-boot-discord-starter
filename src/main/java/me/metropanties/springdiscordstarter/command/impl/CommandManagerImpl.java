@@ -9,7 +9,6 @@ import me.metropanties.springdiscordstarter.command.annotation.SlashCommand;
 import me.metropanties.springdiscordstarter.command.annotation.SlashCommandExecutor;
 import me.metropanties.springdiscordstarter.command.annotation.SlashCommandOption;
 import me.metropanties.springdiscordstarter.command.annotation.SubCommand;
-import me.metropanties.springdiscordstarter.listener.JDAListener;
 import me.metropanties.springdiscordstarter.utils.MemberUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -37,7 +36,6 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-@JDAListener
 public class CommandManagerImpl extends ListenerAdapter implements CommandManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandManagerImpl.class);
